@@ -37,11 +37,6 @@ class ElkaDay(NamedTuple):
         return self.date.strftime(f'%a {self.parity}, %-d %b %Y')
 
 
-class MenuOption(NamedTuple):
-    title: str
-    action: Callable
-
-
 class ElkaCourse(NamedTuple):
     """A periodic event that happens on a given time and weekday (possibly not every week)"""
     name: str
@@ -52,7 +47,7 @@ class ElkaCourse(NamedTuple):
     days: list[ElkaDay]
 
     def __str__(self):
-        return "{}{} on {} at {} in {} ({} classes)".format(
+        return '{}{} on {} at {} in {} ({} classes)'.format(
             self.name,
             f'({self.description})' if self.description else '',
             self.days[0].date.strftime('%a'),
@@ -60,6 +55,11 @@ class ElkaCourse(NamedTuple):
             self.location,
             len(self.days)
         )
+
+
+class MenuOption(NamedTuple):
+    title: str
+    action: Callable
 
 
 def load_semester(sem_code: str) -> list[ElkaDay]:
@@ -76,15 +76,6 @@ def load_semester(sem_code: str) -> list[ElkaDay]:
             ))
 
     return days
-
-
-def show_menu(menu: list[MenuOption]):
-    choice = inquirer.list_input(
-        message='Choose an action',
-        choices=[(opt.title, opt) for opt in menu]
-    )
-
-    choice.action()
 
 
 def create_course(semester: list[ElkaDay]) -> ElkaCourse:
@@ -154,13 +145,22 @@ def export(cal_name: str, courses: list[ElkaCourse]):
     print(f'Exported to {cal_name}.ics')
 
 
+def show_menu(menu: list[MenuOption]):
+    choice = inquirer.list_input(
+        message='Choose an action',
+        choices=[(opt.title, opt) for opt in menu]
+    )
+
+    choice.action()
+
+
 def main():
     cal_name = inquirer.text('Calendar name')
     semester = load_semester('22L')
 
     while True:
         try:
-            courses = pickle.load(open(f"{cal_name}.pickle", "rb"))
+            courses = pickle.load(open(f'{cal_name}.pickle', 'rb'))
         except FileNotFoundError:
             courses = []
 
@@ -176,7 +176,7 @@ def main():
 
         show_menu(main_menu)
 
-        pickle.dump(courses, open(f"{cal_name}.pickle", "wb"))
+        pickle.dump(courses, open(f'{cal_name}.pickle', 'wb'))
 
 
 if __name__ == '__main__':
